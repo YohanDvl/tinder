@@ -1,0 +1,34 @@
+:host {
+	display: block;
+}
+
+/* Force input highlight colors to blue/red (no green) */
+ion-input {
+	--highlight-color-focused: #3b82f6; /* blue */
+	--highlight-color-valid:   #3b82f6; /* blue */
+	--highlight-color-invalid: #e91e63; /* red */
+}
+
+/* When invalid (empty or invalid state): force red underline */
+ion-input.is-invalid {
+	--highlight-color-focused: #e91e63;
+	--highlight-color-valid:   #e91e63;
+	--highlight-color-invalid: #e91e63;
+}
+
+/* When valid (has value and passes validators): force blue underline */
+ion-input.is-valid {
+	--highlight-color-focused: #3b82f6;
+	--highlight-color-valid:   #3b82f6;
+	--highlight-color-invalid: #3b82f6;
+}
+
+/* Tame Chrome autofill tint to keep palette consistent */
+ion-input input:-webkit-autofill,
+ion-input input:-webkit-autofill:hover,
+ion-input input:-webkit-autofill:focus {
+	-webkit-box-shadow: 0 0 0px 1000px rgba(255,255,255,0.08) inset;
+	-webkit-text-fill-color: #ffffff;
+	caret-color: #ffffff;
+	transition: background-color 9999s ease-out 0s;
+}

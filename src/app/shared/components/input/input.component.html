@@ -1,0 +1,14 @@
+<ion-input 
+  [type]="type"
+  [formControl]="control"
+  [label]="label"
+  labelPlacement="floating"
+  [placeholder]="placeholder"
+  [class.is-invalid]="(control.invalid && (control.dirty || control.touched)) || !control.value"
+  [class.is-valid]="!!control.value && control.valid"
+  (keyup)="ontype($event)"
+>
+  @if (type === 'password') {
+    <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+  }
+</ion-input>

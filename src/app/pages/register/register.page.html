@@ -1,0 +1,143 @@
+<ion-content class="login-container">
+	<div class="center-wrap">
+	<ion-card>
+		<ion-card-content>
+					<div class="card-header">
+						<div class="logo-badge">
+							<img class="logo" src="../../../assets/icon/Tinder_(app)-Logo.wine.svg" alt="App logo" />
+						</div>
+				<h1>Create Account</h1>
+				<p class="subtitle">Let's set up your profile</p>
+			</div>
+
+			<!-- Step indicator -->
+			<div class="steps">
+				<span [class.active]="step === 1">1</span>
+				<span [class.active]="step === 2">2</span>
+				<span [class.active]="step === 3">3</span>
+				<span [class.active]="step === 4">4</span>
+				<span [class.active]="step === 5">5</span>
+			</div>
+
+			<!-- STEP 1: Personal info -->
+					<form [formGroup]="registerForm" *ngIf="step === 1" novalidate>
+						<ion-row>
+							<ion-col>
+								<app-input [control]="name" type="text" label="First name" labelPlacement="floating" placeholder="First name"></app-input>
+								<p class="field-error" *ngIf="name.invalid && (name.dirty || name.touched)">First name is required.</p>
+							</ion-col>
+						</ion-row>
+						<ion-row>
+							<ion-col>
+								<app-input [control]="lastName" type="text" label="Last name" labelPlacement="floating" placeholder="Last name"></app-input>
+								<p class="field-error" *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)">Last name is required.</p>
+							</ion-col>
+						</ion-row>
+						<ion-row>
+							<ion-col>
+								<app-input [control]="email" type="email" label="Email" labelPlacement="floating" placeholder="you@example.com"></app-input>
+								<p class="field-error" *ngIf="email.errors?.['required'] && (email.dirty || email.touched)">Email is required.</p>
+								<p class="field-error" *ngIf="email.errors?.['email'] && (email.dirty || email.touched)">Enter a valid email.</p>
+							</ion-col>
+						</ion-row>
+						<ion-row>
+							<ion-col>
+								<app-input [control]="password" type="password" label="Password" labelPlacement="floating" placeholder="********"></app-input>
+								<p class="field-error" *ngIf="password.invalid && (password.dirty || password.touched)">Password is required.</p>
+							</ion-col>
+						</ion-row>
+				<ion-row>
+					<ion-col>
+						<ion-item fill="solid" class="select-item">
+															<ion-label>Country</ion-label>
+															<ion-select interface="popover" [formControl]="country" placeholder="Select your country">
+								<ion-select-option *ngFor="let c of countries" [value]="c">{{ c }}</ion-select-option>
+							</ion-select>
+						</ion-item>
+														<p class="field-error" *ngIf="country.invalid && (country.dirty || country.touched)">Country is required.</p>
+					</ion-col>
+				</ion-row>
+				<ion-row>
+					<ion-col class="actions">
+														<ion-button type="button" fill="clear" (click)="goLogin()">Back to login</ion-button>
+														<app-button type="button" value="Continue" (clicked)="nextStep()"></app-button>
+					</ion-col>
+				</ion-row>
+			</form>
+
+			<!-- STEP 2: Gender -->
+						<div *ngIf="step === 2" class="step-pane">
+			<h2>How do you identify?</h2>
+				<div class="gender-group">
+									<ion-segment [value]="gender.value || null" (ionChange)="onGenderChange($event)">
+						<ion-segment-button value="woman">
+							  <ion-label>Woman</ion-label>
+						</ion-segment-button>
+						<ion-segment-button value="man">
+							  <ion-label>Man</ion-label>
+						</ion-segment-button>
+					</ion-segment>
+				<p class="field-error" *ngIf="genderError">Please select your gender.</p>
+				</div>
+							<div class="nav">
+					  <ion-button fill="clear" (click)="prevStep()">Back</ion-button>
+					  <app-button type="button" value="Continue" (clicked)="nextStep()"></app-button>
+				</div>
+			</div>
+
+			<!-- STEP 3: Birth date (18+) -->
+						<div *ngIf="step === 3" class="step-pane">
+						<h2>When were you born?</h2>
+						<ion-item fill="solid" class="select-item">
+							<ion-label position="stacked">Date of birth</ion-label>
+							<ion-input
+								[formControl]="dob"
+								placeholder="MM/DD/YYYY"
+								inputmode="numeric"
+								(ionInput)="onDobTyped()"
+							></ion-input>
+						</ion-item>
+						<p class="field-error" *ngIf="dob.errors?.['pattern'] && (dob.dirty || dob.touched)">
+							Enter a valid date in MM/DD/YYYY.
+						</p>
+						<p class="error" *ngIf="!dob.errors?.['pattern'] && dobError">You must be 18 or older to continue.</p>
+						<div class="nav">
+							<ion-button fill="clear" (click)="prevStep()">Back</ion-button>
+							<app-button type="button" value="Continue" [disabled]="dobError || dob.invalid || !dob.value" (clicked)="nextStep()"></app-button>
+						</div>
+						</div>
+
+			<!-- STEP 4: Interests -->
+			<div *ngIf="step === 4" class="step-pane">
+			<h2>What are you into?</h2>
+				<div class="chips">
+					<ion-chip [outline]="!isInterestSelected(tag)" [color]="isInterestSelected(tag) ? 'danger' : 'medium'"
+						*ngFor="let tag of interestOptions" (click)="toggleInterest(tag)">
+						<ion-label>{{ tag }}</ion-label>
+					</ion-chip>
+				</div>
+				<div class="nav">
+					  <ion-button fill="clear" (click)="prevStep()">Back</ion-button>
+					  <app-button type="button" value="Continue" (clicked)="nextStep()"></app-button>
+				</div>
+			</div>
+
+			<!-- STEP 5: Photos -->
+			<div *ngIf="step === 5" class="step-pane">
+			<h2>Add your photos</h2>
+				<div class="photos">
+					<label class="photo-tile" *ngFor="let p of photoSlots; let i = index">
+						<input type="file" accept="image/*" (change)="onPhotoSelected($event, i)" hidden />
+						<img *ngIf="photosPreview[i]" [src]="photosPreview[i]" alt="photo {{i+1}}" />
+						<span *ngIf="!photosPreview[i]">+</span>
+					</label>
+				</div>
+				<div class="nav">
+					  <ion-button fill="clear" (click)="prevStep()">Back</ion-button>
+					  <app-button type="button" value="Finish" (clicked)="doRegister()"></app-button>
+				</div>
+			</div>
+		</ion-card-content>
+		</ion-card>
+		</div>
+</ion-content>

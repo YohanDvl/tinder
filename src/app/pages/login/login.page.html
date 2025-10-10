@@ -1,0 +1,48 @@
+<ion-content class="login-container">
+	<div class="center-wrap">
+	<form [formGroup]="loginForm" (ngSubmit)="onlogin()" novalidate>
+		<ion-card>
+			<ion-card-content>
+				<div class="card-header">
+					<div class="logo-badge">
+						<img class="logo" src="../../../assets/icon/Tinder_(app)-Logo.wine.svg" alt="App logo" />
+					</div>
+					<h1>Welcome back</h1>
+					<p class="subtitle">Sign in to continue</p>
+				</div>
+
+				<ion-row>
+					<ion-col>
+						<app-input [control]="email" type="email" label="Email" labelPlacement="floating" placeholder="you@example.com">
+						</app-input>
+						<p class="field-error" *ngIf="email.errors?.['required'] && (email.dirty || email.touched)">Email is required.</p>
+						<p class="field-error" *ngIf="email.errors?.['email'] && (email.dirty || email.touched)">Enter a valid email.</p>
+					</ion-col>
+				</ion-row>
+
+				<ion-row>
+					<ion-col>
+						<app-input [control]="password" type="password" label="Password" labelPlacement="floating" placeholder="********">
+						</app-input>
+						<p class="field-error" *ngIf="password.invalid && (password.dirty || password.touched)">Password is required.</p>
+					</ion-col>
+				</ion-row>
+
+				<ion-row>
+					<ion-col>
+						<app-button type="submit" color="primary" value="Log In"></app-button>
+					</ion-col>
+				</ion-row>
+
+				<ion-row class="register-row">
+					<ion-col class="ion-text-center">
+						<span>Don't have an account? </span>
+						<a [routerLink]="['/register']">Create one</a>
+					</ion-col>
+				</ion-row>
+			</ion-card-content>
+		</ion-card>
+	</form>
+	</div>
+    
+</ion-content>
