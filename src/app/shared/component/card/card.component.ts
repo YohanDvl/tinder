@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, doc } from '@angular/fire/firestore';
+import { getDoc } from 'firebase/firestore';
 
 @Component({
   selector: 'app-card',
@@ -7,15 +8,16 @@ import { Firestore, doc, getDoc } from '@angular/fire/firestore';
   styleUrls: ['./card.component.scss'],
   standalone: false,
 })
+
 export class CardComponent  implements OnInit, OnChanges {
-  @Input() uid?: string;
+  @Input() uid?: string; // opcional: si se pasa, el componente carga el perfil desde Firestore
   @Input() profile?: {
-    id?: string | null;
-    name?: string | null;
-    lastName?: string | null;
+    id?: string;
+    name?: string;
+    lastName?: string;
     gender?: string | null;
     dob?: string | null; // MM/DD/YYYY
-    photos?: string[] | null;
+    photos?: string[];
   };
 
   data: {
@@ -24,13 +26,6 @@ export class CardComponent  implements OnInit, OnChanges {
     age: number | null;
     photo: string | null;
   } = { name: 'Usuario', gender: null, age: null, photo: null };
-
-  private photos: string[] = [];
-  photoIndex = 0;
-
-  get hasMultiplePhotos(): boolean {
-    return this.photos && this.photos.length > 1;
-  }
 
   constructor(private readonly firestore: Firestore) { }
 
@@ -49,7 +44,7 @@ export class CardComponent  implements OnInit, OnChanges {
     if (!p && this.uid) {
       try {
         const ref = doc(this.firestore, 'profiles', this.uid);
-        const snap: any = await getDoc(ref);
+        const snap = await getDoc(ref as any);
         if (snap.exists()) {
           p = snap.data() as any;
         }
@@ -62,23 +57,9 @@ export class CardComponent  implements OnInit, OnChanges {
     const gender = (p?.gender ?? null) as string | null;
     const dob = (p?.dob ?? null) as string | null;
     const age = this.calcAgeFromDob(dob);
-    this.photos = Array.isArray(p?.photos) ? (p!.photos as any[]).map(v => String(v)) : [];
-    this.photoIndex = 0;
-    const photo = this.photos.length > 0 ? this.photos[this.photoIndex] : null;
+    const photo = (p?.photos && p.photos.length > 0) ? String(p.photos[0]) : null;
 
     this.data = { name, gender, age, photo };
-  }
-
-  nextPhoto() {
-    if (this.photos.length < 2) return;
-    this.photoIndex = (this.photoIndex + 1) % this.photos.length;
-    this.data = { ...this.data, photo: this.photos[this.photoIndex] };
-  }
-
-  prevPhoto() {
-    if (this.photos.length < 2) return;
-    this.photoIndex = (this.photoIndex - 1 + this.photos.length) % this.photos.length;
-    this.data = { ...this.data, photo: this.photos[this.photoIndex] };
   }
 
   private calcAgeFromDob(dobStr: string | null): number | null {

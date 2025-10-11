@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, collection, getDocs, query, limit } from '@angular/fire/firestore';
 import { Auth } from 'src/app/core/providers/auth/auth';
 import { supabase } from 'src/app/database/supabase';
 import { Auth as AuthFirebase, signInWithEmailAndPassword } from '@angular/fire/auth';
@@ -27,7 +27,12 @@ export interface IUserProfileCreate extends IUserCreate {
 export interface Profile {
   id: string;
   name: string | null;
+  lastName?: string | null;
+  email?: string | null;
   gender: string | null;
+  dob?: string | null; // MM/DD/YYYY
+  country?: string | null;
+  interests?: string[];
   photos: string[];
 }
 
@@ -91,5 +96,30 @@ export class UserService {
       gender: row.gender ?? null,
       photos: Array.isArray(row.photos) ? row.photos.map((p: any) => String(p)) : [],
     }));
+  }
+
+  // Fetch profiles from Firestore, excluding the current user (client-side filter), limited for performance
+  async getDiscoverProfilesFirestore(excludeUid?: string | null, pageSize = 50): Promise<Profile[]> {
+    const col = collection(this.firestore, 'profiles');
+    const q = query(col, limit(pageSize));
+    const snap = await getDocs(q as any);
+    const list: Profile[] = [];
+    snap.forEach((docSnap: any) => {
+      const d = docSnap.data() || {};
+      const id = String(d.id ?? docSnap.id);
+      if (excludeUid && id === excludeUid) return; // exclude self
+      list.push({
+        id,
+        name: d.name ?? null,
+        lastName: d.lastName ?? null,
+        email: d.email ?? null,
+        gender: d.gender ?? null,
+        dob: d.dob ?? null,
+        country: d.country ?? null,
+        interests: Array.isArray(d.interests) ? d.interests : [],
+        photos: Array.isArray(d.photos) ? d.photos.map((p: any) => String(p)) : [],
+      });
+    });
+    return list;
   }
 }

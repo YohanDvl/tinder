@@ -21,3 +21,22 @@
     color: #fff;
   }
 }
+
+.home-feed {
+  padding: 12px 12px 100px;
+}
+
+swiper-container {
+  display: block;
+  padding: 8px 0 24px;
+}
+
+.card-slide {
+  width: 92%;
+  max-width: 380px;
+  margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--ion-card-background, #1f1f1f);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}

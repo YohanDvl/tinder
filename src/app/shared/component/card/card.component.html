@@ -1,19 +1,17 @@
 <div class="user-card">
   <div class="photo" *ngIf="data.photo; else noPhoto">
-  <button type="button" class="nav left" (click)="prevPhoto()" *ngIf="hasMultiplePhotos">‹</button>
     <img [src]="data.photo" [alt]="data.name" />
-  <button type="button" class="nav right" (click)="nextPhoto()" *ngIf="hasMultiplePhotos">›</button>
   </div>
   <ng-template #noPhoto>
     <div class="photo placeholder">
-      <ion-icon name="image-outline"></ion-icon>
+      <span class="placeholder-icon">No image</span>
     </div>
   </ng-template>
 
   <div class="info">
     <h3 class="name">
       {{ data.name }}
-  <span class="age" *ngIf="data.age !== null">{{ data.age }} years old</span>
+      <span class="age" *ngIf="data.age !== null">{{ data.age }}</span>
     </h3>
     <div class="gender" *ngIf="data.gender">{{ data.gender }}</div>
   </div>

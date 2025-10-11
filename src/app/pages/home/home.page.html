@@ -6,7 +6,20 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <div class="example-content">Home content</div>
+      <div class="home-feed">
+        <ng-container *ngIf="profiles?.length; else emptyState">
+          <swiper-container loop="true" slides-per-view="1" centered-slides="true" auto-height="true" space-between="12">
+            <swiper-slide *ngFor="let p of profiles">
+              <ion-card class="card-slide">
+                <app-card [profile]="p"></app-card>
+              </ion-card>
+            </swiper-slide>
+          </swiper-container>
+        </ng-container>
+        <ng-template #emptyState>
+          <div class="example-content">No hay perfiles para mostrar aún.</div>
+        </ng-template>
+      </div>
     </ion-content>
   </ion-tab>
   

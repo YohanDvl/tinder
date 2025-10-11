@@ -1,0 +1,70 @@
+.user-card {
+	position: relative;
+	display: block;
+	border-radius: 16px;
+	overflow: hidden;
+	background: var(--ion-card-background, #1e1e1e);
+}
+
+.photo {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 3/4;
+	background: #111;
+}
+
+.photo img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.photo .nav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background: rgba(0,0,0,0.45);
+	border: 0;
+	color: #fff;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	line-height: 36px;
+	text-align: center;
+	font-size: 20px;
+}
+
+.photo .nav.left { left: 8px; }
+.photo .nav.right { right: 8px; }
+
+.photo.placeholder {
+	display: grid;
+	place-items: center;
+	color: #888;
+}
+
+.info {
+	padding: 10px 12px 12px;
+	background: rgba(255,255,255,0.04);
+	border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.name {
+	margin: 0;
+	font-size: 18px;
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+}
+
+.age {
+	color: #bbb;
+	font-weight: 400;
+}
+
+.gender {
+	color: #9aa0a6;
+	font-size: 13px;
+	margin-top: 2px;
+}
