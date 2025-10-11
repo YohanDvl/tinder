@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Firestore, doc, setDoc, collection, getDocs, query, limit } from '@angular/fire/firestore';
+import { Firestore } from '@angular/fire/firestore';
+import { doc, setDoc, collection, getDocs, query, limit, getDoc, updateDoc } from 'firebase/firestore';
 import { Auth } from 'src/app/core/providers/auth/auth';
 import { supabase } from 'src/app/database/supabase';
 import { Auth as AuthFirebase, signInWithEmailAndPassword } from '@angular/fire/auth';
@@ -79,6 +80,41 @@ export class UserService {
     const ref = doc(this.firestore, 'profiles', uid);
     await setDoc(ref, profile, { merge: true });
     return { uid };
+  }
+
+  // Get a single profile by uid
+  async getProfile(uid: string): Promise<Profile | null> {
+    try {
+      const ref = doc(this.firestore, 'profiles', uid);
+      const snap: any = await getDoc(ref);
+      if (!snap.exists()) return null;
+      const d = snap.data() || {};
+      return {
+        id: String(d.id ?? uid),
+        name: d.name ?? null,
+        lastName: d.lastName ?? null,
+        email: d.email ?? null,
+        gender: d.gender ?? null,
+        dob: d.dob ?? null,
+        country: d.country ?? null,
+        interests: Array.isArray(d.interests) ? d.interests : [],
+        photos: Array.isArray(d.photos) ? d.photos.map((p: any) => String(p)) : [],
+      };
+    } catch (e) {
+      console.error('getProfile error:', e);
+      return null;
+    }
+  }
+
+  // Update editable fields of profile
+  async updateProfile(uid: string, partial: Partial<Pick<Profile, 'name' | 'lastName' | 'gender' | 'interests'>>): Promise<void> {
+    const ref = doc(this.firestore, 'profiles', uid);
+    const payload: any = { ...partial, updatedAt: new Date().toISOString() };
+    // Ensure interests is array
+    if (partial.interests && !Array.isArray(partial.interests)) {
+      payload.interests = [partial.interests].filter(Boolean);
+    }
+    await updateDoc(ref as any, payload);
   }
 
   // Optional: fetch profiles from Supabase table 'profiles' if you sync there, else adapt to Firestore

@@ -37,11 +37,56 @@
   <ion-tab tab="user">
     <ion-header>
       <ion-toolbar>
-        <ion-title>User info</ion-title>
+        <ion-title>User</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
-      <div class="example-content">User content</div>
+    <ion-content class="home-edit">
+      <div class="center-wrap">
+        <ion-card class="edit-card">
+          <ion-card-header>
+            <ion-card-title>Edit profile</ion-card-title>
+            <ion-card-subtitle>Update your basic information</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <form [formGroup]="editForm" (ngSubmit)="saveProfile()">
+              <ion-list lines="none">
+                <ion-item>
+                  <ion-label position="stacked">First name</ion-label>
+                  <ion-input formControlName="name" placeholder="Your first name"></ion-input>
+                </ion-item>
+                <div class="field-error" *ngIf="editForm?.controls?.['name']?.touched && editForm?.controls?.['name']?.invalid">
+                  Please enter a valid first name.
+                </div>
+
+                <ion-item>
+                  <ion-label position="stacked">Last name</ion-label>
+                  <ion-input formControlName="lastName" placeholder="Your last name"></ion-input>
+                </ion-item>
+                <div class="field-error" *ngIf="editForm?.controls?.['lastName']?.touched && editForm?.controls?.['lastName']?.invalid">
+                  Please enter a valid last name.
+                </div>
+
+                <ion-item>
+                  <ion-label position="stacked">Gender</ion-label>
+                  <ion-select formControlName="gender" interface="popover">
+                    <ion-select-option value="man">Man</ion-select-option>
+                    <ion-select-option value="woman">Woman</ion-select-option>
+                  </ion-select>
+                </ion-item>
+
+                <ion-item>
+                  <ion-label position="stacked">Hobbies</ion-label>
+                  <ion-textarea formControlName="interests" placeholder="Comma-separated: music, travel, ..." rows="3"></ion-textarea>
+                </ion-item>
+              </ion-list>
+
+              <div class="actions">
+                <ion-button expand="block" type="submit" [disabled]="isSaving">Save changes</ion-button>
+              </div>
+            </form>
+          </ion-card-content>
+        </ion-card>
+      </div>
     </ion-content>
   </ion-tab>
 

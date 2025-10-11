@@ -1,3 +1,47 @@
+.home-edit {
+  --background: linear-gradient(180deg, #300812 0%, #8e0038 38%, #c2185b 68%, #e91e63 100%);
+
+  &::part(background) {
+    background:
+      radial-gradient(1200px 900px at 55% 115%, rgba(233,30,99, 0.28), rgba(233,30,99, 0) 60%),
+      radial-gradient(900px 800px at -10% -10%, rgba(255,64,129, 0.30), transparent 60%),
+      radial-gradient(700px 600px at 110% 10%, rgba(233,30,99, 0.22), transparent 65%),
+      linear-gradient(180deg, #300812 0%, #8e0038 38%, #c2185b 68%, #e91e63 100%);
+  }
+}
+
+.center-wrap { width: 100%; display: grid; place-items: center; padding: 24px; }
+
+.edit-card {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(32, 10, 18, 0.34), rgba(255, 255, 255, 0.10));
+  backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid rgba(255, 200, 210, 0.18);
+  box-shadow: 0 18px 48px rgba(60, 4, 16, 0.50);
+}
+
+.edit-card ion-card-header { padding-bottom: 0; }
+.edit-card ion-card-title { color: #fff; font-weight: 800; }
+.edit-card ion-card-subtitle { color: rgba(255,255,255,0.85); }
+.edit-card ion-card-content { padding-top: 12px; }
+
+.edit-card ion-item {
+  --background: rgba(255,255,255,0.08);
+  --border-color: rgba(255,200,210,0.16);
+  border-radius: 14px;
+  margin-bottom: 12px;
+}
+
+.actions { margin-top: 12px; }
+.actions ion-button {
+  height: 54px;
+  border-radius: 14px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #c2185b 0%, #e91e63 60%, #ff4081 120%);
+  box-shadow: 0 14px 36px rgba(233,30,99,0.35);
+}
 .floating-tab-bar {
   position: fixed;
   bottom: 20px;

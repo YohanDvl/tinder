@@ -18,17 +18,20 @@ export class Auth {
 
   }
 
-   async login(email: string, password:string){
+   async login(email: string, password:string): Promise<boolean> {
       try {
-        const response = await signInWithEmailAndPassword(this.authFirebase, email, password);
-        if (response) {
-          this.router.navigate(['/home']);
+        const em = (email ?? '').trim();
+        const pw = (password ?? '').trim();
+        if (!em || !pw) return false;
+        const response = await signInWithEmailAndPassword(this.authFirebase, em, pw);
+        if (response && response.user) {
+          await this.router.navigateByUrl('/home', { replaceUrl: true });
+          return true;
         }
-        console.log(response);
-
+        return false;
       } catch (error) {
-        console.log((error as any).message);
-
+        console.error('Login error:', (error as any)?.code || (error as any)?.message || error);
+        return false;
       }
   }
 
