@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Auth } from 'src/app/core/providers/auth/auth';
 import { UserService, Profile } from 'src/app/shared/services/user.service';
+import { Uploader } from 'src/app/core/providers/uploader/uploader';
 // import { AuthService } from 'src/app/services/auth.service'; // opcional
 
 @Component({
@@ -12,11 +13,13 @@ import { UserService, Profile } from 'src/app/shared/services/user.service';
   standalone:false,
 })
 export class HomePage implements OnInit {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   constructor(
     private router: Router,
     private auth: Auth,
     private userService: UserService,
     private fb: FormBuilder,
+    private upload: Uploader,
   ) {
     // Create form synchronously to avoid template errors before async load
     this.editForm = this.fb.group({
@@ -31,6 +34,10 @@ export class HomePage implements OnInit {
   editForm!: FormGroup;
   isSaving = false;
   meUid: string | null = null;
+  saveToastOpen = false;
+  saveToastMessage = '';
+  saveToastColor: 'success' | 'danger' | 'warning' = 'success';
+  myPhotos: string[] = [];
 
   async ngOnInit() {
     const uid = await this.auth.waitForUid();
@@ -50,6 +57,7 @@ export class HomePage implements OnInit {
       gender: me.gender ?? 'man',
       interests: (me.interests ?? []).join(', '),
     });
+    this.myPhotos = Array.isArray(me.photos) ? me.photos : [];
   }
 
   async saveProfile() {
@@ -71,8 +79,56 @@ export class HomePage implements OnInit {
         gender,
         interests: arr,
       });
+      this.saveToastColor = 'success';
+      this.saveToastMessage = 'Profile updated';
+      this.saveToastOpen = true;
     } finally {
       this.isSaving = false;
+    }
+  }
+
+  onAddPhoto() {
+    const input = this.fileInput?.nativeElement;
+    input?.click();
+  }
+
+  async onFilePicked(evt: Event) {
+    if (!this.meUid) return;
+    const input = evt.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    if (!file) return;
+    try {
+      // Read file as base64
+      const b64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const ext = file.type.split('/')[1] || 'jpg';
+      const name = `${this.meUid}_${Date.now()}.${ext}`;
+      const path = await this.upload.upload('imagen', name, file.type, b64);
+      const url = await this.upload.getUrl('imagen', path);
+      this.myPhotos = [...this.myPhotos, url];
+      await this.userService.updateProfile(this.meUid, { photos: this.myPhotos as any });
+    } catch (e) {
+      console.error('Add photo error', e);
+    } finally {
+      (evt.target as HTMLInputElement).value = '';
+    }
+  }
+
+  async onDeletePhoto(index: number) {
+    if (!this.meUid) return;
+    try {
+      const ok = window.confirm('Delete this photo?');
+      if (!ok) return;
+      const clone = [...this.myPhotos];
+      clone.splice(index, 1);
+      this.myPhotos = clone;
+      await this.userService.updateProfile(this.meUid, { photos: this.myPhotos as any });
+    } catch (e) {
+      console.error('Delete photo error', e);
     }
   }
 

@@ -107,7 +107,7 @@ export class UserService {
   }
 
   // Update editable fields of profile
-  async updateProfile(uid: string, partial: Partial<Pick<Profile, 'name' | 'lastName' | 'gender' | 'interests'>>): Promise<void> {
+  async updateProfile(uid: string, partial: Partial<Pick<Profile, 'name' | 'lastName' | 'gender' | 'interests' | 'photos'>>): Promise<void> {
     const ref = doc(this.firestore, 'profiles', uid);
     const payload: any = { ...partial, updatedAt: new Date().toISOString() };
     // Ensure interests is array

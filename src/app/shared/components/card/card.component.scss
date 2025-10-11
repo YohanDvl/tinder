@@ -9,15 +9,17 @@
 .photo {
 	position: relative;
 	width: 100%;
-	aspect-ratio: 3/4;
 	background: #111;
+	height: 360px; // cap image height so the card isn't too tall
 }
 
 .photo img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	object-fit: contain; // show entire image without cropping
+	background: #000;    // letterbox space
 	display: block;
+	border-radius: 12px;
 }
 
 .photo .nav {
@@ -46,8 +48,8 @@
 
 .info {
 	padding: 10px 12px 12px;
-	background: rgba(255,255,255,0.04);
-	border-top: 1px solid rgba(255,255,255,0.06);
+	background: rgba(233,30,99,0.18);
+	border-top: 1px solid rgba(233,30,99,0.28);
 }
 
 .name {
@@ -59,12 +61,12 @@
 }
 
 .age {
-	color: #bbb;
+	color: #ffe4ec;
 	font-weight: 400;
 }
 
 .gender {
-	color: #9aa0a6;
+	color: #ffe4ec;
 	font-size: 13px;
 	margin-top: 2px;
 }

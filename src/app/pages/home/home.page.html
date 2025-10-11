@@ -2,10 +2,13 @@
   <ion-tab tab="home">
     <ion-header>
       <ion-toolbar>
-        <ion-title>Home</ion-title>
+        <div class="toolbar-brand">
+          <img class="brand-logo" src="assets/icon/Tinderlogo.png" alt="Tinder" />
+          <span class="brand-name">tinder</span>
+        </div>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
+    <ion-content class="home-feed-content">
       <div class="home-feed">
         <ng-container *ngIf="profiles?.length; else emptyState">
           <swiper-container loop="true" slides-per-view="1" centered-slides="true" auto-height="true" space-between="12">
@@ -37,10 +40,14 @@
   <ion-tab tab="user">
     <ion-header>
       <ion-toolbar>
-        <ion-title>User</ion-title>
+        <div class="toolbar-brand">
+          <img class="brand-logo" src="assets/icon/Tinderlogo.png" alt="Tinder" />
+          <span class="brand-name">tinder</span>
+          <span class="user-title">{{ editForm.value['name'] || 'User' }}</span>
+        </div>
       </ion-toolbar>
     </ion-header>
-    <ion-content class="home-edit">
+    <ion-content class="home-edit" [scrollY]="false" fullscreen="true">
       <div class="center-wrap">
         <ion-card class="edit-card">
           <ion-card-header>
@@ -76,17 +83,45 @@
 
                 <ion-item>
                   <ion-label position="stacked">Hobbies</ion-label>
-                  <ion-textarea formControlName="interests" placeholder="Comma-separated: music, travel, ..." rows="3"></ion-textarea>
+                  <ion-input formControlName="interests" placeholder="Comma-separated: music, travel, ..." type="text"></ion-input>
                 </ion-item>
               </ion-list>
 
+              <div class="photos-manager">
+                <div class="pm-header">
+                  <h4>Photos</h4>
+                  <input hidden type="file" accept="image/*" #fileInput (change)="onFilePicked($event)" />
+                </div>
+                <div class="pm-grid">
+                  <div class="pm-item" *ngFor="let url of myPhotos; let i = index">
+                    <img [src]="url" alt="photo" />
+                    <button type="button" class="pm-del" (click)="onDeletePhoto(i)">✕</button>
+                  </div>
+                  <div class="pm-item add" (click)="onAddPhoto()">
+                    <span>+</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="actions">
-                <ion-button expand="block" type="submit" [disabled]="isSaving">Save changes</ion-button>
+                <ion-button expand="block" type="submit" [disabled]="isSaving" color="primary">
+                  <ion-spinner slot="start" *ngIf="isSaving"></ion-spinner>
+                  {{ isSaving ? 'Saving…' : 'Save changes' }}
+                </ion-button>
               </div>
             </form>
           </ion-card-content>
         </ion-card>
       </div>
+      <ion-toast
+        [isOpen]="saveToastOpen"
+        (didDismiss)="saveToastOpen = false"
+        [message]="saveToastMessage"
+        [color]="saveToastColor"
+        duration="2200"
+        position="top"
+        icon="checkmark-circle">
+      </ion-toast>
     </ion-content>
   </ion-tab>
 
@@ -95,7 +130,7 @@
       <ion-icon name="chatbox"></ion-icon>
       Chat
     </ion-tab-button>
-    <ion-tab-button tab="home">
+    <ion-tab-button tab="home" class="home-tab">
       <ion-icon name="home"></ion-icon>
       Home
     </ion-tab-button>
