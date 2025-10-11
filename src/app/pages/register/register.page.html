@@ -126,18 +126,31 @@
 			<div *ngIf="step === 5" class="step-pane">
 			<h2>Add your photos</h2>
 				<div class="photos">
-					<label class="photo-tile" *ngFor="let p of photoSlots; let i = index">
-						<input type="file" accept="image/*" (change)="onPhotoSelected($event, i)" hidden />
-						<img *ngIf="photosPreview[i]" [src]="photosPreview[i]" alt="photo {{i+1}}" />
-						<span *ngIf="!photosPreview[i]">+</span>
+					<label class="photo-tile" *ngFor="let item of imgUrl; let i = index">
+						
+						
+							<img [src]="imgUrl[i]" alt="">
 					</label>
 				</div>
 				<div class="nav">
+
 					  <ion-button fill="clear" (click)="prevStep()">Back</ion-button>
-					  <app-button type="button" value="Finish" (clicked)="doRegister()"></app-button>
+					  <app-button type="button" value="Add" (clicked)="pickImage()"></app-button>
+					  <app-button type="button" value="Finix" (clicked)="finishRegistration()"></app-button>
+
 				</div>
 			</div>
 		</ion-card-content>
 		</ion-card>
 		</div>
+
+	<ion-toast
+		[isOpen]="toastOpen"
+		(didDismiss)="toastOpen = false"
+		[message]="toastMessage"
+		color="dark"
+		duration="2200"
+		position="top"
+		icon="checkmark-circle">
+	</ion-toast>
 </ion-content>

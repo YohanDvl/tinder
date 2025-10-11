@@ -15,8 +15,8 @@
 					<ion-col>
 						<app-input [control]="email" type="email" label="Email" labelPlacement="floating" placeholder="you@example.com">
 						</app-input>
-						<p class="field-error" *ngIf="email.errors?.['required'] && (email.dirty || email.touched)">Email is required.</p>
-						<p class="field-error" *ngIf="email.errors?.['email'] && (email.dirty || email.touched)">Enter a valid email.</p>
+						<p class="field-error" *ngIf="email.errors?.['required'] && (email.dirty || email.touched)">El correo es obligatorio.</p>
+						<p class="field-error" *ngIf="email.errors?.['email'] && (email.dirty || email.touched)">Ingresa un correo válido.</p>
 					</ion-col>
 				</ion-row>
 
@@ -24,13 +24,16 @@
 					<ion-col>
 						<app-input [control]="password" type="password" label="Password" labelPlacement="floating" placeholder="********">
 						</app-input>
-						<p class="field-error" *ngIf="password.invalid && (password.dirty || password.touched)">Password is required.</p>
+						<p class="field-error" *ngIf="password.invalid && (password.dirty || password.touched)">La contraseña es obligatoria.</p>
 					</ion-col>
 				</ion-row>
 
 				<ion-row>
 					<ion-col>
 						<app-button type="submit" color="primary" value="Log In"></app-button>
+						<p class="field-error ion-text-center" *ngIf="loginErrorMessage">
+							{{ loginErrorMessage }}
+						</p>
 					</ion-col>
 				</ion-row>
 
@@ -44,5 +47,15 @@
 		</ion-card>
 	</form>
 	</div>
-    
+
+	<!-- Toast visible y simple (sin controlador) -->
+	<ion-toast
+		[isOpen]="invalidToastOpen"
+		(didDismiss)="invalidToastOpen = false"
+		[message]="invalidToastMessage"
+		color="danger"
+		duration="2500"
+		position="top"
+		icon="alert-circle">
+	</ion-toast>
 </ion-content>

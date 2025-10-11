@@ -11,7 +11,8 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 // Tus servicios
 import { Auth } from './providers/auth/auth';
 import { Capacitor } from '@capacitor/core';
-import { environment } from '../environments/environment';
+import { environment } from 'src/environments/environment';
+
 
 
 const providers = [Auth, ];

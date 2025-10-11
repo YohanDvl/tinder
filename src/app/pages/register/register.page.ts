@@ -1,6 +1,12 @@
+import { GlobalUser } from './../../core/services/GlobalUser/global-user';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Auth } from 'src/app/core/providers/auth/auth';
+import { UserService, IUserProfileCreate } from 'src/app/shared/services/user.service';
+import { File } from 'src/app/core/providers/file/file';
+import { Uploader } from 'src/app/core/providers/uploader/uploader';
+import { IImage } from 'src/app/interfaces/imagen.interfaces';
 
 
 @Component({
@@ -10,6 +16,10 @@ import { Router } from '@angular/router';
   standalone: false,
 })
 export class RegisterPage implements OnInit {
+    public img!: IImage;
+   public imgUrl: string[] = [];
+  public image: string = '';
+  displayName = '';
  name!: FormControl;
  lastName!: FormControl;
  email!: FormControl;
@@ -21,6 +31,11 @@ export class RegisterPage implements OnInit {
  photos!: FormControl;    // File[]
  registerForm!: FormGroup;
  step = 1;
+
+ // UI state
+ isSaving = false;
+ toastOpen = false;
+ toastMessage = '';
 
  countries: string[] = [
    'Argentina','Bolivia','Brasil','Chile','Colombia','Costa Rica','Ecuador','España','México','Perú','Uruguay'
@@ -37,22 +52,91 @@ export class RegisterPage implements OnInit {
  // Pattern for MM/DD/YYYY
  private dobRegex: RegExp = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
 
-  constructor(private router: Router) {
+  constructor(private router: Router,
+    private readonly fileSrv: File,
+    private readonly uploadSrv: Uploader,
+    private readonly authSrv: Auth,
+    private readonly GlobalUser: GlobalUser,
+    private readonly userSrv: UserService,
+   ) {
     this.initForm();
   }
 
+
+   public async pickImage(){
+    this.img = await this.fileSrv.pickImage();
+
+
+   const path = await this.uploadSrv.upload('imagen',
+       `${Date.now()}-${this.img.name}`,
+       this.img.mimeType,
+       this.img.data);
+       console.log(path);
+
+      //  const hola = await this.uploaderSrv.getUrls('images', path as any);
+      //  console.log(hola);
+
+       this.image = await this.uploadSrv.getUrl('imagen', path);
+
+       this.imgUrl.push(this.image);
+
+      //this.urlSrv.setUrl(this.image); //Seteamos la url para hacerla global con el servicio
+
+      //  this.urlSrv.addUrl(this.image);//Array glodal de imagenes
+
+  }
+
   public async doRegister(){
-    const payload = {
-      ...this.registerForm.value,
+    await this.finishRegistration();
+  }
+
+  // Finaliza registro: crea usuario en Auth si no existe y guarda perfil completo via UserService
+  public async finishRegistration(){
+    if (this.isSaving) return;
+    // Validaciones mínimas por si llega directo a step 5
+    if (!this.isStep1Valid()) {
+      this.step = 1;
+      this.toastMessage = 'Completa tus datos personales (nombre, apellido, email, contraseña y país).';
+      this.toastOpen = true;
+      return;
+    }
+    if (!this.gender.value) {
+      this.step = 2; this.genderError = true;
+      this.toastMessage = 'Selecciona tu género para continuar.';
+      this.toastOpen = true;
+      return;
+    }
+    if (this.dob.invalid || this.dobError || !this.dob.value) {
+      this.step = 3;
+      this.toastMessage = 'Ingresa una fecha válida (MM/DD/YYYY) y debes ser mayor de 18 años.';
+      this.toastOpen = true;
+      return;
+    }
+
+    this.isSaving = true;
+    const payload: IUserProfileCreate = {
+      name: this.name.value,
+      lastName: this.lastName.value,
+      email: this.email.value,
+      password: this.password.value,
+      country: this.country.value,
       gender: this.gender.value,
       dob: this.dob.value,
       interests: this.interests.value || [],
-      photos: (this.photos.value || []).length
+      photos: this.imgUrl || [],
     };
-    console.log('Register payload', payload);
-    // TODO: integrate with API
-    this.router.navigate(['/home']);
 
+    try {
+      await this.userSrv.create(payload);
+      this.toastMessage = 'Perfil creado correctamente';
+      this.toastOpen = true;
+      this.router.navigate(['/home']);
+    } catch (e) {
+      console.error('UserService create error', e);
+      this.toastMessage = 'Error al guardar el perfil';
+      this.toastOpen = true;
+    }
+    this.isSaving = false;
   }
 
   ngOnInit() {
@@ -192,7 +276,15 @@ export class RegisterPage implements OnInit {
     reader.onload = () => {
       this.photosPreview[index] = reader.result as string;
     };
-    reader.readAsDataURL(file);
-  }
+    console.log(file);
+    
+   const hola = reader.readAsDataURL(file);
 
-}
+   console.log(hola);
+   
+  }
+  
+
+  
+    }
+

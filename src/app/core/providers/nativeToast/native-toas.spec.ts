@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { User } from './user';
+import { NativeToas } from './native-toas';
 
-describe('User', () => {
-  let service: User;
+describe('NativeToas', () => {
+  let service: NativeToas;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(User);
+    service = TestBed.inject(NativeToas);
   });
 
   it('should be created', () => {
