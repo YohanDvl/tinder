@@ -24,7 +24,7 @@ export class Uploader {
 
   async getUrl(bucket: string, path: string): Promise<string>{
 
-    const {data, error} = await supabase.storage.from(bucket).createSignedUrl(path, 86400);
+    const {data, error} = await supabase.storage.from(bucket).createSignedUrl(path, 31536000);
 
     return data?.signedUrl || '';
   }

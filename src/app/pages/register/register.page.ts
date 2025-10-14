@@ -49,8 +49,8 @@ export class RegisterPage implements OnInit {
  photosPreview: (string | null)[] = Array(6).fill(null);
  dobError = false;
  genderError = false;
- // Pattern for MM/DD/YYYY
- private dobRegex: RegExp = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
+ // Pattern for MM/DD/YYYY or MM-DD-YYYY (allow / or -)
+ private dobRegex: RegExp = /^(0[1-9]|1[0-2])[\/\-](0[1-9]|[12][0-9]|3[01])[\/\-]\d{4}$/;
 
   constructor(private router: Router,
     private readonly fileSrv: File,
@@ -214,13 +214,15 @@ export class RegisterPage implements OnInit {
   // Called on each input change; validates format and 18+
   onDobTyped(){
     const raw = (this.dob.value || '').trim();
+    // Normalize separators to '/'
+    const normalized = raw.replace(/-/g, '/');
     // If format invalid, let the pattern validator show the error and don't show 18+ yet
     if(!this.dobRegex.test(raw)){
       this.dobError = false;
       return;
     }
 
-    const date = this.parseDob(raw);
+    const date = this.parseDob(normalized);
     if(!date){
       // Invalid combination like 02/30/2020
       this.dob.setErrors({ pattern: true });
@@ -232,6 +234,7 @@ export class RegisterPage implements OnInit {
 
   // Parse MM/DD/YYYY to Date ensuring month/day are valid
   private parseDob(str: string): Date | null {
+    // Accept both separators but expect we already normalized to '/'
     const m = str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
     if(!m) return null;
     const mm = parseInt(m[1], 10);

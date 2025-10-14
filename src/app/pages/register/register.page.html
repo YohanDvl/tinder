@@ -92,13 +92,13 @@
 							<ion-label position="stacked">Date of birth</ion-label>
 							<ion-input
 								[formControl]="dob"
-								placeholder="MM/DD/YYYY"
-								inputmode="numeric"
+								placeholder="MM/DD/YYYY or MM-DD-YYYY"
+								inputmode="text"
 								(ionInput)="onDobTyped()"
 							></ion-input>
 						</ion-item>
 						<p class="field-error" *ngIf="dob.errors?.['pattern'] && (dob.dirty || dob.touched)">
-							Enter a valid date in MM/DD/YYYY.
+							Enter a valid date (MM/DD/YYYY or MM-DD-YYYY).
 						</p>
 						<p class="error" *ngIf="!dob.errors?.['pattern'] && dobError">You must be 18 or older to continue.</p>
 						<div class="nav">
